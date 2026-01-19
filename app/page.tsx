@@ -6,7 +6,7 @@ export default function Home() {
         <div className="container mx-auto px-4 relative z-10">
           <div className="max-w-md md:max-w-lg mr-auto text-left">
             <h1 className="text-3xl md:text-5xl font-bold text-white mb-4">Selamat Datang di Koperasi Desa Koto Jayo Besamo</h1>
-            <p className="text-lg md:text-xl text-white mb-8">Besamo, Kito Biso!</p>
+            <p className="text-lg md:text-xl text-white mb-8">Tanah Batin Kito Besamo</p>
           </div>
         </div>
       </section>
