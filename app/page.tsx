@@ -1,11 +1,12 @@
 export default function Home() {
   return (
     <>
-      <section className="min-h-screen flex items-center bg-linear-to-r from-white to-transparent">
-        <div className="container mx-auto px-4">
+      <section className="min-h-screen flex items-center relative bg-[url('/image.png')] bg-cover bg-center">
+        <div className="absolute inset-0 bg-gradient-to-r from-black to-transparent"></div>
+        <div className="container mx-auto px-4 relative z-10">
           <div className="max-w-md md:max-w-lg mr-auto text-left">
-            <h1 className="text-3xl md:text-5xl font-bold text-black mb-4">Selamat Datang di Koperasi Desa Koto Jayo Bersamo</h1>
-            <p className="text-lg md:text-xl text-black mb-8">Meningkatkan kesejahteraan masyarakat desa melalui kerja sama dan transparansi.</p>
+            <h1 className="text-3xl md:text-5xl font-bold text-white mb-4">Selamat Datang di Koperasi Desa Koto Jayo Bersamo</h1>
+            <p className="text-lg md:text-xl text-white mb-8">Meningkatkan kesejahteraan masyarakat desa melalui kerja sama dan transparansi.</p>
           </div>
         </div>
       </section>
