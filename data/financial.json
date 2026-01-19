@@ -1,0 +1,23 @@
+[
+  {
+    "id": 1,
+    "date": "2023-01-15",
+    "category": "pemasukan",
+    "amount": 5000000,
+    "description": "Simpanan anggota"
+  },
+  {
+    "id": 2,
+    "date": "2023-01-20",
+    "category": "pengeluaran",
+    "amount": 2000000,
+    "description": "Pembelian bahan baku"
+  },
+  {
+    "id": 3,
+    "date": "2023-02-10",
+    "category": "pemasukan",
+    "amount": 6000000,
+    "description": "Penjualan produk"
+  }
+]

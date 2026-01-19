@@ -1,0 +1,14 @@
+[
+  {
+    "id": 1,
+    "name": "Ahmad Surya",
+    "address": "Desa Koto Jayo",
+    "joinDate": "2020-01-15"
+  },
+  {
+    "id": 2,
+    "name": "Siti Aminah",
+    "address": "Desa Koto Jayo",
+    "joinDate": "2020-03-20"
+  }
+]
