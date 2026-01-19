@@ -11,7 +11,7 @@ export default function Navigation() {
     <nav className="bg-primary text-white p-4">
       <div className="container mx-auto flex justify-between items-center">
         <div className="flex items-center space-x-3">
-          <Image src="/logo.png" alt="Logo" width={50} height={40} className="h-10" />
+          <Image src="/logo.png" alt="Logo" width={40} height={40} className="h-10" />
           <Link href="/" className="text-xl font-bold">Koperasi Desa Koto Jayo Besamo</Link>
         </div>
         {/* Desktop Menu */}
