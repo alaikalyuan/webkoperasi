@@ -5,8 +5,8 @@ export default function Home() {
         <div className="absolute inset-0 bg-gradient-to-r from-black to-transparent"></div>
         <div className="container mx-auto px-4 relative z-10">
           <div className="max-w-md md:max-w-lg mr-auto text-left">
-            <h1 className="text-3xl md:text-5xl font-bold text-white mb-4">Selamat Datang di Koperasi Desa Koto Jayo Bersamo</h1>
-            <p className="text-lg md:text-xl text-white mb-8">Meningkatkan kesejahteraan masyarakat desa melalui kerja sama dan transparansi.</p>
+            <h1 className="text-3xl md:text-5xl font-bold text-white mb-4">Selamat Datang di Koperasi Desa Koto Jayo Besamo</h1>
+            <p className="text-lg md:text-xl text-white mb-8">Besamo, Kito Biso!</p>
           </div>
         </div>
       </section>
@@ -14,7 +14,7 @@ export default function Home() {
         <section className="py-12">
           <div className="bg-white p-6 rounded shadow">
             <h2 className="text-2xl font-semibold mb-4">Ringkasan Koperasi</h2>
-            <p>Koperasi Desa Koto Jayo Bersamo didirikan untuk membantu masyarakat dalam bidang ekonomi dan sosial.</p>
+            <p>Koperasi Desa Koto Jayo Bessamo didirikan untuk membantu masyarakat dalam bidang ekonomi dan sosial.</p>
           </div>
         </section>
         <section className="py-12">
