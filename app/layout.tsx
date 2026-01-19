@@ -14,8 +14,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Koperasi Desa Koto Jayo Besamo",
-  description: "Website resmi Koperasi Desa Koto Jayo Beramo - Dokumentasi kegiatan dan laporan keuangan",
+  title: "Koperasi Kito Jayo Besamo",
+  description: "Website resmi Koperasi Kito Jayo Beramo - Dokumentasi kegiatan dan laporan keuangan",
 };
 
 export default function RootLayout({
