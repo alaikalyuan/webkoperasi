@@ -1,17 +1,21 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import Image from 'next/image';
 
 interface Activity {
   id: number;
   title: string;
   description: string;
   date: string;
+  imageUrl?: string;
 }
 
 export default function ContentManagement() {
   const [activities, setActivities] = useState<Activity[]>([]);
   const [formData, setFormData] = useState({ title: '', description: '', date: '' });
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string>('');
 
   useEffect(() => {
     fetch('/api/activities')
@@ -19,23 +23,55 @@ export default function ContentManagement() {
       .then(data => setActivities(data));
   }, []);
 
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setImageFile(file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    const formDataToSend = new FormData();
+    formDataToSend.append('title', formData.title);
+    formDataToSend.append('description', formData.description);
+    formDataToSend.append('date', formData.date);
+    if (imageFile) {
+      formDataToSend.append('image', imageFile);
+    }
+
     const response = await fetch('/api/activities', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(formData)
+      body: formDataToSend
     });
     if (response.ok) {
       const newActivity = await response.json();
       setActivities([...activities, newActivity]);
       setFormData({ title: '', description: '', date: '' });
+      setImageFile(null);
+      setImagePreview('');
     }
   };
 
   const handleDelete = async (id: number) => {
-    // For simplicity, just remove from state. In real app, add DELETE API
-    setActivities(activities.filter(activity => activity.id !== id));
+    try {
+      const response = await fetch(`/api/activities?id=${id}`, {
+        method: 'DELETE',
+      });
+      if (response.ok) {
+        setActivities(activities.filter(activity => activity.id !== id));
+      } else {
+        alert('Gagal menghapus kegiatan');
+      }
+    } catch (error) {
+      console.error('Error deleting activity:', error);
+      alert('Terjadi kesalahan saat menghapus');
+    }
   };
 
   return (
@@ -75,6 +111,21 @@ export default function ContentManagement() {
                 required
               />
             </div>
+            <div className="mb-4">
+              <label className="block text-sm font-medium mb-2">Gambar (Opsional)</label>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleImageChange}
+                className="w-full px-3 py-2 border border-gray-300 rounded"
+              />
+              {imagePreview && (
+                <div className="mt-2">
+                  <p className="text-sm text-gray-600 mb-2">Preview:</p>
+                  <img src={imagePreview} alt="Preview" className="w-full h-48 object-cover rounded" />
+                </div>
+              )}
+            </div>
             <button type="submit" className="bg-primary text-white px-4 py-2 rounded hover:bg-green-700">
               Tambah Kegiatan
             </button>
@@ -82,11 +133,14 @@ export default function ContentManagement() {
         </div>
         <div>
           <h2 className="text-2xl font-semibold mb-4">Daftar Kegiatan</h2>
-          <div className="space-y-4">
+          <div className="space-y-4 max-h-96 overflow-y-auto">
             {activities.map(activity => (
               <div key={activity.id} className="bg-white p-4 rounded shadow">
+                {activity.imageUrl && (
+                  <img src={activity.imageUrl} alt={activity.title} className="w-full h-32 object-cover rounded mb-2" />
+                )}
                 <h3 className="text-xl font-semibold">{activity.title}</h3>
-                <p className="text-gray-600">{activity.description}</p>
+                <p className="text-gray-600 text-sm line-clamp-2">{activity.description}</p>
                 <p className="text-sm text-gray-500">{activity.date}</p>
                 <button
                   onClick={() => handleDelete(activity.id)}
