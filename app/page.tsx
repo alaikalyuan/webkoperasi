@@ -13,6 +13,7 @@ interface Activity {
 
 export default function Home() {
   const [latestActivities, setLatestActivities] = useState<Activity[]>([]);
+  const [currentActivityIndex, setCurrentActivityIndex] = useState(0);
   const [selectedActivity, setSelectedActivity] = useState<Activity | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -25,6 +26,19 @@ export default function Home() {
       });
   }, []);
 
+  // Auto-play carousel
+  useEffect(() => {
+    if (latestActivities.length === 0) return;
+
+    const interval = setInterval(() => {
+      setCurrentActivityIndex(prev =>
+        prev === latestActivities.length - 1 ? 0 : prev + 1
+      );
+    }, 5000); // Change slide every 5 seconds
+
+    return () => clearInterval(interval);
+  }, [latestActivities.length]);
+
   const openModal = (activity: Activity) => {
     setSelectedActivity(activity);
     setIsModalOpen(true);
@@ -35,72 +49,146 @@ export default function Home() {
     setSelectedActivity(null);
   };
 
+  const goToPrevious = () => {
+    setCurrentActivityIndex(prev =>
+      prev === 0 ? latestActivities.length - 1 : prev - 1
+    );
+  };
+
+  const goToNext = () => {
+    setCurrentActivityIndex(prev =>
+      prev === latestActivities.length - 1 ? 0 : prev + 1
+    );
+  };
+
+  const goToSlide = (index: number) => {
+    setCurrentActivityIndex(index);
+  };
+
   return (
     <>
-      <section className="min-h-screen flex items-center relative bg-[url('/image.png')] bg-cover bg-center">
+      <section className="min-h-60 sm:min-h-96 flex items-center relative bg-[url('/image.png')] bg-cover bg-center">
         <div className="absolute inset-0 bg-linear-to-r from-black to-transparent"></div>
         <div className="container mx-auto px-4 relative z-10">
           <div className="max-w-md md:max-w-lg mr-auto text-left">
             <h1 className="text-3xl md:text-5xl font-bold text-white mb-4">Selamat Datang di Koperasi Kito Jayo Besamo</h1>
-            <p className="text-lg md:text-xl text-white mb-8">Tanah Batin Kito Besamo</p>
+            <p className="text-lg md:text-xl text-white">Tanah Batin Kito Besamo</p>
           </div>
         </div>
       </section>
       <div className="container mx-auto p-4">
+      <section className="py-6">
+          <h2 className="text-3xl font-bold text-primary mb-6">Kegiatan Terbaru</h2>
+          
+          {latestActivities.length > 0 ? (
+            <div className="relative">
+              {/* Carousel Container */}
+              <div className="overflow-hidden rounded-lg shadow-lg">
+                <div
+                  className="relative h-96 bg-gray-200 transition-opacity duration-500"
+                >
+                  {/* Current Activity Card */}
+                  <div
+                    onClick={() => openModal(latestActivities[currentActivityIndex])}
+                    className="w-full h-full cursor-pointer"
+                  >
+                    {latestActivities[currentActivityIndex].imageUrl ? (
+                      <Image
+                        src={latestActivities[currentActivityIndex].imageUrl}
+                        alt={latestActivities[currentActivityIndex].title}
+                        className="w-full h-full object-cover"
+                        fill
+                        sizes="100vw"
+                        priority
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center bg-linear-to-br from-primary to-green-600">
+                        <span className="text-6xl">📸</span>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Dark Overlay */}
+                  <div className="absolute inset-0 bg-black/40"></div>
+
+                  {/* Activity Info Overlay */}
+                  <div className="absolute inset-0 flex flex-col justify-end p-6 bg-gradient-to-t from-black/80 to-transparent">
+                    <div
+                      onClick={() => openModal(latestActivities[currentActivityIndex])}
+                      className="cursor-pointer hover:text-primary transition-colors"
+                    >
+                      <h3 className="text-2xl font-bold text-white mb-2 line-clamp-2">
+                        {latestActivities[currentActivityIndex].title}
+                      </h3>
+                      <p className="text-sm text-gray-200 mb-2 line-clamp-2">
+                        {latestActivities[currentActivityIndex].description}
+                      </p>
+                      <p className="text-xs text-gray-300">
+                        {new Date(latestActivities[currentActivityIndex].date).toLocaleDateString('id-ID')}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Navigation Arrows */}
+              <button
+                onClick={goToPrevious}
+                className="absolute left-4 top-1/2 -translate-y-1/2 z-10 bg-white/80 hover:bg-white text-primary rounded-full p-2 transition-all duration-300 transform hover:scale-110 shadow-lg"
+                aria-label="Previous activity"
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                </svg>
+              </button>
+
+              <button
+                onClick={goToNext}
+                className="absolute right-4 top-1/2 -translate-y-1/2 z-10 bg-white/80 hover:bg-white text-primary rounded-full p-2 transition-all duration-300 transform hover:scale-110 shadow-lg"
+                aria-label="Next activity"
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                </svg>
+              </button>
+
+              {/* Slide Indicators */}
+              <div className="flex justify-center gap-2 mt-6">
+                {latestActivities.map((_, index) => (
+                  <button
+                    key={index}
+                    onClick={() => goToSlide(index)}
+                    className={`h-2 rounded-full transition-all duration-300 ${
+                      index === currentActivityIndex
+                        ? 'bg-primary w-8'
+                        : 'bg-gray-300 w-2 hover:bg-gray-400'
+                    }`}
+                    aria-label={`Go to activity ${index + 1}`}
+                  />
+                ))}
+              </div>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="bg-white p-4 rounded shadow">
+                <h3 className="text-xl font-semibold">Rapat Anggota Tahunan</h3>
+                <p>Diskusi tentang perkembangan koperasi dan rencana masa depan.</p>
+              </div>
+              <div className="bg-white p-4 rounded shadow">
+                <h3 className="text-xl font-semibold">Distribusi Sembako</h3>
+                <p>Bantuan sembako untuk anggota yang membutuhkan.</p>
+              </div>
+              <div className="bg-white p-4 rounded shadow">
+                <h3 className="text-xl font-semibold">Pelatihan Wirausaha</h3>
+                <p>Pelatihan untuk meningkatkan keterampilan anggota.</p>
+              </div>
+            </div>
+          )}
+        </section>
         <section className="py-12">
           <div className="bg-white p-6 rounded shadow">
             <h2 className="text-2xl font-semibold mb-4">Ringkasan Koperasi</h2>
             <p>Koperasi Desa Kito Jayo Besamo didirikan untuk membantu masyarakat dalam bidang ekonomi dan sosial.</p>
-          </div>
-        </section>
-        <section className="py-12">
-          <h2 className="text-3xl font-bold text-primary mb-6">Sorotan Kegiatan Terbaru</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {latestActivities.length > 0 ? (
-              latestActivities.map(activity => (
-                <div
-                  key={activity.id}
-                  onClick={() => openModal(activity)}
-                  className="bg-white rounded shadow overflow-hidden cursor-pointer hover:shadow-lg transition-shadow duration-300 transform hover:scale-105"
-                >
-                  <div className="relative h-40 bg-gray-200">
-                    {activity.imageUrl ? (
-                      <Image
-                        src={activity.imageUrl}
-                        alt={activity.title}
-                        className="w-full h-full object-cover"
-                        fill
-                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                      />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center bg-linear-to-br from-primary to-green-600 text-white">
-                        <span className="text-3xl">📸</span>
-                      </div>
-                    )}
-                  </div>
-                  <div className="p-4">
-                    <h3 className="text-lg font-semibold text-primary mb-2 line-clamp-2">{activity.title}</h3>
-                    <p className="text-sm text-gray-600 mb-2 line-clamp-2">{activity.description}</p>
-                    <p className="text-xs text-gray-500">{new Date(activity.date).toLocaleDateString('id-ID')}</p>
-                  </div>
-                </div>
-              ))
-            ) : (
-              <>
-                <div className="bg-white p-4 rounded shadow">
-                  <h3 className="text-xl font-semibold">Rapat Anggota Tahunan</h3>
-                  <p>Diskusi tentang perkembangan koperasi dan rencana masa depan.</p>
-                </div>
-                <div className="bg-white p-4 rounded shadow">
-                  <h3 className="text-xl font-semibold">Distribusi Sembako</h3>
-                  <p>Bantuan sembako untuk anggota yang membutuhkan.</p>
-                </div>
-                <div className="bg-white p-4 rounded shadow">
-                  <h3 className="text-xl font-semibold">Pelatihan Wirausaha</h3>
-                  <p>Pelatihan untuk meningkatkan keterampilan anggota.</p>
-                </div>
-              </>
-            )}
           </div>
         </section>
         <section className="py-12">

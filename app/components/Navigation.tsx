@@ -8,7 +8,7 @@ export default function Navigation() {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <nav className="bg-primary text-white p-4 absolute w-full z-10">
+    <nav className="bg-primary text-white p-4">
       <div className="container mx-auto flex justify-between items-center">
         <div className="flex items-center space-x-3">
           <Image src="/logo.png" alt="Logo" width={40} height={40} className="h-10" />
