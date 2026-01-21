@@ -16,6 +16,9 @@ export default function ContentManagement() {
   const [formData, setFormData] = useState({ title: '', description: '', date: '' });
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string>('');
+  const [showAddConfirm, setShowAddConfirm] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [deleteActivityId, setDeleteActivityId] = useState<number | null>(null);
 
   useEffect(() => {
     fetch('/api/activities')
@@ -37,6 +40,11 @@ export default function ContentManagement() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setShowAddConfirm(true);
+  };
+
+  const confirmAdd = async () => {
+    setShowAddConfirm(false);
     const formDataToSend = new FormData();
     formDataToSend.append('title', formData.title);
     formDataToSend.append('description', formData.description);
@@ -59,12 +67,21 @@ export default function ContentManagement() {
   };
 
   const handleDelete = async (id: number) => {
+    setDeleteActivityId(id);
+    setShowDeleteConfirm(true);
+  };
+
+  const confirmDelete = async () => {
+    if (deleteActivityId === null) return;
+
     try {
-      const response = await fetch(`/api/activities?id=${id}`, {
+      const response = await fetch(`/api/activities?id=${deleteActivityId}`, {
         method: 'DELETE',
       });
       if (response.ok) {
-        setActivities(activities.filter(activity => activity.id !== id));
+        setActivities(activities.filter(activity => activity.id !== deleteActivityId));
+        setShowDeleteConfirm(false);
+        setDeleteActivityId(null);
       } else {
         alert('Gagal menghapus kegiatan');
       }
@@ -133,7 +150,7 @@ export default function ContentManagement() {
         </div>
         <div>
           <h2 className="text-2xl font-semibold mb-4">Daftar Kegiatan</h2>
-          <div className="space-y-4 max-h-96 overflow-y-auto">
+          <div className="space-y-4 max-h-5/12 overflow-y-auto">
             {activities.map(activity => (
               <div key={activity.id} className="bg-white p-4 rounded shadow">
                 {activity.imageUrl && (
@@ -153,6 +170,58 @@ export default function ContentManagement() {
           </div>
         </div>
       </div>
+
+      {/* Add Confirmation Modal */}
+      {showAddConfirm && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-lg max-w-sm w-full p-6">
+            <h2 className="text-2xl font-bold mb-4 text-primary">Konfirmasi Tambah Kegiatan</h2>
+            <p className="text-gray-700 mb-6">
+              Apakah Anda yakin ingin menambahkan kegiatan <strong>&quot;{formData.title}&quot;</strong>?
+            </p>
+            <div className="flex gap-3">
+              <button
+                onClick={() => setShowAddConfirm(false)}
+                className="flex-1 bg-gray-300 text-gray-800 px-4 py-2 rounded hover:bg-gray-400 transition"
+              >
+                Batal
+              </button>
+              <button
+                onClick={confirmAdd}
+                className="flex-1 bg-primary text-white px-4 py-2 rounded hover:bg-green-700 transition"
+              >
+                Tambah
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Delete Confirmation Modal */}
+      {showDeleteConfirm && deleteActivityId !== null && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-lg max-w-sm w-full p-6">
+            <h2 className="text-2xl font-bold mb-4 text-red-600">Konfirmasi Hapus Kegiatan</h2>
+            <p className="text-gray-700 mb-6">
+              Apakah Anda yakin ingin menghapus kegiatan ini? Tindakan ini tidak dapat dibatalkan.
+            </p>
+            <div className="flex gap-3">
+              <button
+                onClick={() => setShowDeleteConfirm(false)}
+                className="flex-1 bg-gray-300 text-gray-800 px-4 py-2 rounded hover:bg-gray-400 transition"
+              >
+                Batal
+              </button>
+              <button
+                onClick={confirmDelete}
+                className="flex-1 bg-red-500 text-white px-4 py-2 rounded hover:bg-red-700 transition"
+              >
+                Hapus
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
