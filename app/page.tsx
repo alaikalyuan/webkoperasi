@@ -12,6 +12,8 @@ interface Activity {
 
 export default function Home() {
   const [latestActivities, setLatestActivities] = useState<Activity[]>([]);
+  const [selectedActivity, setSelectedActivity] = useState<Activity | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
     fetch('/api/activities')
@@ -21,6 +23,16 @@ export default function Home() {
         setLatestActivities(sorted.slice(0, 3));
       });
   }, []);
+
+  const openModal = (activity: Activity) => {
+    setSelectedActivity(activity);
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setSelectedActivity(null);
+  };
 
   return (
     <>
@@ -45,7 +57,11 @@ export default function Home() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {latestActivities.length > 0 ? (
               latestActivities.map(activity => (
-                <div key={activity.id} className="bg-white rounded shadow overflow-hidden">
+                <div
+                  key={activity.id}
+                  onClick={() => openModal(activity)}
+                  className="bg-white rounded shadow overflow-hidden cursor-pointer hover:shadow-lg transition-shadow duration-300 transform hover:scale-105"
+                >
                   <div className="relative h-40 bg-gray-200">
                     {activity.imageUrl ? (
                       <img
@@ -92,6 +108,63 @@ export default function Home() {
           </div>
         </section>
       </div>
+
+      {/* Modal */}
+      {isModalOpen && selectedActivity && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-lg max-w-2xl w-full max-h-2/3 overflow-y-auto">
+            <div className="sticky top-0 bg-primary text-white p-4 flex justify-between items-center z-10">
+              <h2 className="text-2xl font-bold">{selectedActivity.title}</h2>
+              <button
+                onClick={closeModal}
+                className="text-2xl font-bold hover:text-gray-200 transition"
+              >
+                ✕
+              </button>
+            </div>
+
+            <div className="p-6">
+              {selectedActivity.imageUrl && (
+                <div className="mb-4 relative h-64 bg-gray-200 rounded overflow-hidden">
+                  <img
+                    src={selectedActivity.imageUrl}
+                    alt={selectedActivity.title}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              )}
+
+              <div className="space-y-4">
+                <div>
+                  <h3 className="text-sm font-semibold text-gray-600 uppercase mb-1">Tanggal</h3>
+                  <p className="text-lg text-gray-800">
+                    {new Date(selectedActivity.date).toLocaleDateString('id-ID', {
+                      weekday: 'long',
+                      year: 'numeric',
+                      month: 'long',
+                      day: 'numeric',
+                    })}
+                  </p>
+                </div>
+
+                <div>
+                  <h3 className="text-sm font-semibold text-gray-600 uppercase mb-1">Deskripsi</h3>
+                  <p className="text-gray-800 leading-relaxed whitespace-pre-wrap">{selectedActivity.description}</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-gray-100 p-4 flex gap-2">
+              <button
+                onClick={closeModal}
+                className="flex-1 bg-primary text-white px-4 py-2 rounded hover:bg-green-700 transition"
+              >
+                Tutup
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 }

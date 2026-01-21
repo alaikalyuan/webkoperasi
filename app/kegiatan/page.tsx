@@ -53,10 +53,11 @@ export default function Activities() {
               >
                 <div className="relative h-48 bg-gray-200">
                   {activity.imageUrl ? (
-                    <img
+                    <Image
                       src={activity.imageUrl}
                       alt={activity.title}
-                      className="w-full h-full object-cover"
+                      fill
+                      className="object-cover"
                     />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary to-green-600 text-white">
@@ -83,7 +84,7 @@ export default function Activities() {
       {isModalOpen && selectedActivity && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
           <div className="bg-white rounded-lg max-w-2xl w-full max-h-2/3 overflow-y-auto">
-            <div className="sticky top-0 bg-primary text-white p-4 flex justify-between items-center">
+            <div className="sticky top-0 bg-primary text-white p-4 flex justify-between items-center z-10">
               <h2 className="text-2xl font-bold">{selectedActivity.title}</h2>
               <button
                 onClick={closeModal}
@@ -96,10 +97,11 @@ export default function Activities() {
             <div className="p-6">
               {selectedActivity.imageUrl && (
                 <div className="mb-4 relative h-64 bg-gray-200 rounded overflow-hidden">
-                  <img
+                  <Image
                     src={selectedActivity.imageUrl}
                     alt={selectedActivity.title}
-                    className="w-full h-full object-cover"
+                    fill
+                    className="object-cover"
                   />
                 </div>
               )}
