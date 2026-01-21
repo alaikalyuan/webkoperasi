@@ -60,7 +60,7 @@ export default function Activities() {
                       className="object-cover"
                     />
                   ) : (
-                    <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary to-green-600 text-white">
+                    <div className="w-full h-full flex items-center justify-center bg-linear-to-br from-primary to-green-600 text-white">
                       <span className="text-4xl">📸</span>
                     </div>
                   )}

@@ -122,7 +122,7 @@ export default function ContentManagement() {
               {imagePreview && (
                 <div className="mt-2">
                   <p className="text-sm text-gray-600 mb-2">Preview:</p>
-                  <img src={imagePreview} alt="Preview" className="w-full h-48 object-cover rounded" />
+                  <Image src={imagePreview} alt="Preview" width={400} height={192} className="w-full h-48 object-cover rounded" />
                 </div>
               )}
             </div>
@@ -137,7 +137,7 @@ export default function ContentManagement() {
             {activities.map(activity => (
               <div key={activity.id} className="bg-white p-4 rounded shadow">
                 {activity.imageUrl && (
-                  <img src={activity.imageUrl} alt={activity.title} className="w-full h-32 object-cover rounded mb-2" />
+                  <Image src={activity.imageUrl} alt={activity.title} width={400} height={128} className="w-full h-32 object-cover rounded mb-2" />
                 )}
                 <h3 className="text-xl font-semibold">{activity.title}</h3>
                 <p className="text-gray-600 text-sm line-clamp-2">{activity.description}</p>

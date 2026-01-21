@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import Image from 'next/image';
 
 interface Activity {
   id: number;
@@ -64,13 +65,15 @@ export default function Home() {
                 >
                   <div className="relative h-40 bg-gray-200">
                     {activity.imageUrl ? (
-                      <img
+                      <Image
                         src={activity.imageUrl}
                         alt={activity.title}
                         className="w-full h-full object-cover"
+                        fill
+                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                       />
                     ) : (
-                      <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary to-green-600 text-white">
+                      <div className="w-full h-full flex items-center justify-center bg-linear-to-br from-primary to-green-600 text-white">
                         <span className="text-3xl">📸</span>
                       </div>
                     )}
@@ -126,10 +129,12 @@ export default function Home() {
             <div className="p-6">
               {selectedActivity.imageUrl && (
                 <div className="mb-4 relative h-64 bg-gray-200 rounded overflow-hidden">
-                  <img
+                  <Image
                     src={selectedActivity.imageUrl}
                     alt={selectedActivity.title}
                     className="w-full h-full object-cover"
+                    fill
+                    sizes="(max-width: 768px) 100vw, 672px"
                   />
                 </div>
               )}
