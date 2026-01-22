@@ -8,13 +8,11 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const category = searchParams.get('category');
 
-    let query = db.select().from(staff);
-    
-    if (category) {
-      query = db.select().from(staff).where(eq(staff.category, category));
-    }
+    const data = await (category
+      ? db.select().from(staff).where(eq(staff.category, category))
+      : db.select().from(staff)
+    );
 
-    const data = await query;
     return NextResponse.json(data);
   } catch (error) {
     console.error('Failed to read staff data:', error);
