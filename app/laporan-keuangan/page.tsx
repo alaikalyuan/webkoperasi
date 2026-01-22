@@ -1,99 +1,147 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 
-interface FinancialEntry {
+interface FinancialReport {
   id: number;
-  date: string;
-  category: 'pemasukan' | 'pengeluaran';
-  amount: number;
-  description: string;
+  month: string;
+  fileName: string;
+  blobUrl: string;
+  fileType: 'pdf' | 'excel';
+  uploadedAt: string;
+  uploadedBy?: string;
 }
 
 export default function FinancialReports() {
-  const [entries, setEntries] = useState<FinancialEntry[]>([]);
+  const [reports, setReports] = useState<FinancialReport[]>([]);
+  const [selectedReport, setSelectedReport] = useState<FinancialReport | null>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     fetch('/api/financial')
       .then(res => res.json())
-      .then(data => setEntries(data));
+      .then(data => {
+        setReports(data.sort((a: FinancialReport, b: FinancialReport) => b.month.localeCompare(a.month)));
+        setLoading(false);
+      })
+      .catch(error => {
+        console.error('Failed to fetch reports:', error);
+        setLoading(false);
+      });
   }, []);
 
-  // Group by month for chart
-  const chartData = entries.reduce((acc, entry) => {
-    const month = entry.date.substring(0, 7); // YYYY-MM
-    if (!acc[month]) {
-      acc[month] = { name: month, pemasukan: 0, pengeluaran: 0 };
-    }
-    if (entry.category === 'pemasukan') {
-      acc[month].pemasukan += entry.amount;
-    } else {
-      acc[month].pengeluaran += entry.amount;
-    }
-    return acc;
-  }, {} as Record<string, { name: string; pemasukan: number; pengeluaran: number }>);
+  const formatMonth = (monthStr: string) => {
+    const [year, month] = monthStr.split('-');
+    const date = new Date(parseInt(year), parseInt(month) - 1);
+    return new Intl.DateTimeFormat('id-ID', { year: 'numeric', month: 'long' }).format(date);
+  };
 
-  const chartArray = Object.values(chartData);
-
-  const totalPemasukan = entries.filter(e => e.category === 'pemasukan').reduce((sum, e) => sum + e.amount, 0);
-  const totalPengeluaran = entries.filter(e => e.category === 'pengeluaran').reduce((sum, e) => sum + e.amount, 0);
+  const getFileIcon = (fileType: string) => {
+    return fileType === 'pdf' ? '📄' : '📊';
+  };
 
   return (
     <div className="container mx-auto p-4">
       <h1 className="text-4xl font-bold text-primary mb-6">Laporan Keuangan</h1>
-      <section className="mb-8">
-        <h2 className="text-3xl font-semibold mb-4">Grafik Ringkasan Pemasukan vs Pengeluaran</h2>
-        <div className="bg-white p-6 rounded shadow">
-          <ResponsiveContainer width="100%" height={400}>
-            <BarChart data={chartArray}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="name" />
-              <YAxis />
-              <Tooltip formatter={(value) => value ? `Rp ${value.toLocaleString()}` : ''} />
-              <Legend />
-              <Bar dataKey="pemasukan" fill="#84934A" name="Pemasukan" />
-              <Bar dataKey="pengeluaran" fill="#492828" name="Pengeluaran" />
-            </BarChart>
-          </ResponsiveContainer>
+
+      {loading ? (
+        <div className="text-center py-8">
+          <p>Memuat laporan...</p>
         </div>
-      </section>
-      <section className="mb-8">
-        <h2 className="text-3xl font-semibold mb-4">Tabel Laporan Bulanan</h2>
-        <div className="bg-white p-6 rounded shadow overflow-x-auto">
-          <table className="w-full table-auto">
-            <thead>
-              <tr className="bg-gray-100">
-                <th className="px-4 py-2">Bulan</th>
-                <th className="px-4 py-2">Pemasukan</th>
-                <th className="px-4 py-2">Pengeluaran</th>
-                <th className="px-4 py-2">Saldo</th>
-              </tr>
-            </thead>
-            <tbody>
-              {chartArray.map((item) => (
-                <tr key={item.name} className="border-t">
-                  <td className="px-4 py-2">{item.name}</td>
-                  <td className="px-4 py-2">Rp {item.pemasukan.toLocaleString()}</td>
-                  <td className="px-4 py-2">Rp {item.pengeluaran.toLocaleString()}</td>
-                  <td className="px-4 py-2">Rp {(item.pemasukan - item.pengeluaran).toLocaleString()}</td>
-                </tr>
+      ) : reports.length === 0 ? (
+        <div className="bg-yellow-50 border border-yellow-200 p-6 rounded">
+          <p className="text-yellow-800">Belum ada laporan keuangan yang tersedia.</p>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+          {/* Reports List */}
+          <div className="lg:col-span-1">
+            <h2 className="text-2xl font-semibold mb-4">Daftar Laporan</h2>
+            <div className="space-y-2">
+              {reports.map((report) => (
+                <button
+                  key={report.id}
+                  onClick={() => setSelectedReport(report)}
+                  className={`w-full text-left p-3 rounded transition-colors ${
+                    selectedReport?.id === report.id
+                      ? 'bg-primary text-white'
+                      : 'bg-white border border-gray-300 hover:bg-gray-50'
+                  }`}
+                >
+                  <div className="font-semibold">{formatMonth(report.month)}</div>
+                  <div className="text-sm">
+                    {getFileIcon(report.fileType)} {report.fileType.toUpperCase()}
+                  </div>
+                </button>
               ))}
-            </tbody>
-          </table>
+            </div>
+          </div>
+
+          {/* Selected Report Display */}
+          <div className="lg:col-span-3">
+            {selectedReport ? (
+              <div className="bg-white p-6 rounded shadow">
+                <div className="mb-6">
+                  <h2 className="text-3xl font-semibold mb-2">
+                    {formatMonth(selectedReport.month)}
+                  </h2>
+                  <p className="text-gray-600">
+                    File: {selectedReport.fileName}
+                  </p>
+                  <p className="text-sm text-gray-500">
+                    Diupload: {new Date(selectedReport.uploadedAt).toLocaleDateString('id-ID')}
+                  </p>
+                </div>
+
+                <div className="space-y-4">
+                  {selectedReport.fileType === 'pdf' ? (
+                    <div>
+                      <iframe
+                        src={selectedReport.blobUrl}
+                        className="w-full h-96 border border-gray-300 rounded"
+                        title={selectedReport.fileName}
+                      />
+                    </div>
+                  ) : (
+                    <div className="bg-gray-50 p-4 rounded text-center">
+                      <p className="text-gray-600 mb-4">File Excel tidak dapat ditampilkan secara langsung</p>
+                      <a
+                        href={selectedReport.blobUrl}
+                        download={selectedReport.fileName}
+                        className="inline-block bg-blue-500 text-white px-6 py-2 rounded hover:bg-blue-600"
+                      >
+                        Download Excel
+                      </a>
+                    </div>
+                  )}
+
+                  <div className="flex gap-3">
+                    <a
+                      href={selectedReport.blobUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex-1 bg-primary text-white px-4 py-2 rounded text-center hover:bg-green-700 transition-colors"
+                    >
+                      Buka di Tab Baru
+                    </a>
+                    <a
+                      href={selectedReport.blobUrl}
+                      download={selectedReport.fileName}
+                      className="flex-1 bg-blue-500 text-white px-4 py-2 rounded text-center hover:bg-blue-600 transition-colors"
+                    >
+                      Download
+                    </a>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <div className="bg-gray-50 p-6 rounded border border-gray-300 text-center">
+                <p className="text-gray-600">Pilih laporan dari daftar di sebelah untuk melihat detailnya</p>
+              </div>
+            )}
+          </div>
         </div>
-      </section>
-      <section>
-        <h2 className="text-3xl font-semibold mb-4">Laporan Tahunan</h2>
-        <div className="bg-white p-6 rounded shadow">
-          <p><strong>Total Pemasukan:</strong> Rp {totalPemasukan.toLocaleString()}</p>
-          <p><strong>Total Pengeluaran:</strong> Rp {totalPengeluaran.toLocaleString()}</p>
-          <p><strong>Saldo Akhir:</strong> Rp {(totalPemasukan - totalPengeluaran).toLocaleString()}</p>
-          <button className="mt-4 bg-primary text-white px-4 py-2 rounded hover:bg-green-700">
-            Unduh Laporan PDF
-          </button>
-        </div>
-      </section>
+      )}
     </div>
   );
 }

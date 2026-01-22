@@ -21,12 +21,14 @@ export const members = sqliteTable("members", {
   joinDate: text("joinDate").notNull(),
 });
 
-export const financial = sqliteTable("financial", {
-  id: integer("id").primaryKey(),
-  date: text("date").notNull(),
-  category: text("category").notNull(),
-  amount: integer("amount").notNull(),
-  description: text("description").notNull(),
+export const financialReports = sqliteTable("financialReports", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
+  month: text("month").notNull().unique(), // YYYY-MM format
+  fileName: text("fileName").notNull(),
+  blobUrl: text("blobUrl").notNull(),
+  fileType: text("fileType").notNull(), // "pdf" or "excel"
+  uploadedAt: text("uploadedAt").notNull(),
+  uploadedBy: text("uploadedBy"),
 });
 
 export const cooperative = sqliteTable("cooperative", {

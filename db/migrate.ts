@@ -1,5 +1,5 @@
 import { db, client } from './index.ts';
-import { activities, members, financial, cooperative, staff } from './schema.ts';
+import { activities, members, financialReports, cooperative, staff } from './schema.ts';
 import * as fs from 'fs';
 import * as path from 'path';
 
