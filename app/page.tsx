@@ -169,18 +169,10 @@ export default function Home() {
               </div>
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div className="bg-white p-4 rounded shadow">
-                <h3 className="text-xl font-semibold">Rapat Anggota Tahunan</h3>
-                <p>Diskusi tentang perkembangan koperasi dan rencana masa depan.</p>
-              </div>
-              <div className="bg-white p-4 rounded shadow">
-                <h3 className="text-xl font-semibold">Distribusi Sembako</h3>
-                <p>Bantuan sembako untuk anggota yang membutuhkan.</p>
-              </div>
-              <div className="bg-white p-4 rounded shadow">
-                <h3 className="text-xl font-semibold">Pelatihan Wirausaha</h3>
-                <p>Pelatihan untuk meningkatkan keterampilan anggota.</p>
+            <div className="flex items-center justify-center h-96">
+              <div className="text-center">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+              <p className="text-gray-600">Memuat kegiatan terbaru...</p>
               </div>
             </div>
           )}

@@ -36,3 +36,11 @@ export const cooperative = sqliteTable("cooperative", {
   phone: text("phone").notNull(),
   email: text("email").notNull(),
 });
+
+export const staff = sqliteTable("staff", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
+  name: text("name").notNull(),
+  position: text("position").notNull(),
+  category: text("category").notNull(), // "pengurus" or "dewan_pengawas"
+  imageUrl: text("imageUrl"),
+});

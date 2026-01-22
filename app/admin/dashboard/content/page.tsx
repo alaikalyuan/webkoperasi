@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
 
 interface Activity {
   id: number;
@@ -92,7 +93,14 @@ export default function ContentManagement() {
   };
 
   return (
+    <div className='min-h-screen bg-bg-light'>
+      <nav className="bg-primary text-white p-4">
+        <div className="container mx-auto">
+          <Link href="/admin/dashboard" className="text-white hover:text-gray-200">← Kembali ke Dashboard</Link>
+        </div>
+      </nav>
     <div className="container mx-auto p-4">
+      
       <h1 className="text-3xl font-bold text-primary mb-6">Manajemen Konten Kegiatan</h1>
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         <div>
@@ -222,6 +230,7 @@ export default function ContentManagement() {
           </div>
         </div>
       )}
+    </div>
     </div>
   );
 }

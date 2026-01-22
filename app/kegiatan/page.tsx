@@ -74,9 +74,9 @@ export default function Activities() {
             ))}
           </div>
         ) : (
-          <div className="bg-white p-8 rounded shadow text-center text-gray-600">
-            <p className="text-lg">Belum ada kegiatan yang ditambahkan</p>
-          </div>
+            <div className="bg-white p-8 rounded shadow text-center text-gray-600">
+            <p className="text-lg">Memuat kegiatan...</p>
+            </div>
         )}
       </section>
 

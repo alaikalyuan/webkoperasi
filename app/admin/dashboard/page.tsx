@@ -49,9 +49,9 @@ export default function AdminDashboard() {
             <h2 className="text-xl font-semibold text-primary mb-2">Input Laporan Keuangan</h2>
             <p>Masukkan data pemasukan dan pengeluaran.</p>
           </Link>
-          <Link href="/admin/dashboard/members" className="bg-white p-6 rounded shadow hover:shadow-lg transition">
-            <h2 className="text-xl font-semibold text-primary mb-2">Manajemen Anggota</h2>
-            <p>Kelola data anggota koperasi.</p>
+          <Link href="/admin/dashboard/staff" className="bg-white p-6 rounded shadow hover:shadow-lg transition">
+            <h2 className="text-xl font-semibold text-primary mb-2">Struktur Organisasi</h2>
+            <p>Kelola pengurus dan dewan pengawas.</p>
           </Link>
           <Link href="/admin/dashboard/profile" className="bg-white p-6 rounded shadow hover:shadow-lg transition">
             <h2 className="text-xl font-semibold text-primary mb-2">Pengaturan Profil</h2>
