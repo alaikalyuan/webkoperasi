@@ -9,6 +9,9 @@ interface Activity {
   description: string;
   date: string;
   imageUrl?: string;
+  imageUrl2?: string;
+  imageUrl3?: string;
+  imageUrl4?: string;
 }
 
 interface PencapaianData {
@@ -25,6 +28,7 @@ export default function Home() {
   const [currentActivityIndex, setCurrentActivityIndex] = useState(0);
   const [selectedActivity, setSelectedActivity] = useState<Activity | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [mainImageIndex, setMainImageIndex] = useState(0);
 
   useEffect(() => {
     fetch('/api/activities')
@@ -61,12 +65,28 @@ export default function Home() {
 
   const openModal = (activity: Activity) => {
     setSelectedActivity(activity);
+    setMainImageIndex(0);
     setIsModalOpen(true);
   };
 
   const closeModal = () => {
     setIsModalOpen(false);
     setSelectedActivity(null);
+    setMainImageIndex(0);
+  };
+
+  const swapImage = (clickedIndex: number) => {
+    if (!selectedActivity) return;
+    const images = [
+      selectedActivity.imageUrl,
+      selectedActivity.imageUrl2,
+      selectedActivity.imageUrl3,
+      selectedActivity.imageUrl4,
+    ].filter(Boolean);
+
+    if (clickedIndex >= 0 && clickedIndex < images.length && clickedIndex !== mainImageIndex) {
+      setMainImageIndex(clickedIndex);
+    }
   };
 
   const goToPrevious = () => {
@@ -227,15 +247,55 @@ export default function Home() {
             </div>
 
             <div className="p-6">
-              {selectedActivity.imageUrl && (
-                <div className="mb-4 relative h-64 bg-gray-200 rounded overflow-hidden">
-                  <Image
-                    src={selectedActivity.imageUrl}
-                    alt={selectedActivity.title}
-                    className="w-full h-full object-cover"
-                    fill
-                    sizes="(max-width: 768px) 100vw, 672px"
-                  />
+              {/* Image Gallery */}
+              {(selectedActivity.imageUrl || selectedActivity.imageUrl2 || selectedActivity.imageUrl3 || selectedActivity.imageUrl4) && (
+                <div className="mb-6">
+                  {(() => {
+                    const allImages = [
+                      selectedActivity.imageUrl,
+                      selectedActivity.imageUrl2,
+                      selectedActivity.imageUrl3,
+                      selectedActivity.imageUrl4,
+                    ].filter(Boolean);
+
+                    return (
+                      <>
+                        {/* Main Image */}
+                        <div className="mb-4">
+                          {allImages[mainImageIndex] && (
+                            <div className="relative h-64 bg-gray-200 rounded overflow-hidden mb-4">
+                              <img
+                                src={allImages[mainImageIndex]}
+                                alt={selectedActivity.title}
+                                className="w-full h-full object-cover"
+                              />
+                            </div>
+                          )}
+                        </div>
+
+                        {/* Thumbnail Grid */}
+                        {allImages.length > 1 && (
+                          <div className="grid grid-cols-3 gap-3">
+                            {allImages.map((img, idx) =>
+                              idx !== mainImageIndex ? (
+                                <div
+                                  key={idx}
+                                  onClick={() => swapImage(idx)}
+                                  className="relative h-24 bg-gray-200 rounded overflow-hidden cursor-pointer hover:opacity-75 transition-opacity"
+                                >
+                                  <img
+                                    src={img}
+                                    alt={`Gambar ${idx + 1}`}
+                                    className="w-full h-full object-cover"
+                                  />
+                                </div>
+                              ) : null
+                            )}
+                          </div>
+                        )}
+                      </>
+                    );
+                  })()}
                 </div>
               )}
 

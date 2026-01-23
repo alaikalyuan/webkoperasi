@@ -10,13 +10,16 @@ interface Activity {
   description: string;
   date: string;
   imageUrl?: string;
+  imageUrl2?: string;
+  imageUrl3?: string;
+  imageUrl4?: string;
 }
 
 export default function ContentManagement() {
   const [activities, setActivities] = useState<Activity[]>([]);
   const [formData, setFormData] = useState({ title: '', description: '', date: '' });
-  const [imageFile, setImageFile] = useState<File | null>(null);
-  const [imagePreview, setImagePreview] = useState<string>('');
+  const [imageFiles, setImageFiles] = useState<(File | null)[]>([null, null, null, null]);
+  const [imagePreviews, setImagePreviews] = useState<(string)[]>(['', '', '', '']);
   const [showAddConfirm, setShowAddConfirm] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [deleteActivityId, setDeleteActivityId] = useState<number | null>(null);
@@ -27,16 +30,24 @@ export default function ContentManagement() {
       .then(data => setActivities(data));
   }, []);
 
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageChange = (index: number, e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
+    const newFiles = [...imageFiles];
+    const newPreviews = [...imagePreviews];
+
     if (file) {
-      setImageFile(file);
+      newFiles[index] = file;
       const reader = new FileReader();
       reader.onloadend = () => {
-        setImagePreview(reader.result as string);
+        newPreviews[index] = reader.result as string;
+        setImagePreviews(newPreviews);
       };
       reader.readAsDataURL(file);
+    } else {
+      newFiles[index] = null;
+      newPreviews[index] = '';
     }
+    setImageFiles(newFiles);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -50,9 +61,12 @@ export default function ContentManagement() {
     formDataToSend.append('title', formData.title);
     formDataToSend.append('description', formData.description);
     formDataToSend.append('date', formData.date);
-    if (imageFile) {
-      formDataToSend.append('image', imageFile);
-    }
+    
+    imageFiles.forEach((file, index) => {
+      if (file) {
+        formDataToSend.append(`image${index + 1}`, file);
+      }
+    });
 
     const response = await fetch('/api/activities', {
       method: 'POST',
@@ -62,8 +76,8 @@ export default function ContentManagement() {
       const newActivity = await response.json();
       setActivities([...activities, newActivity]);
       setFormData({ title: '', description: '', date: '' });
-      setImageFile(null);
-      setImagePreview('');
+      setImageFiles([null, null, null, null]);
+      setImagePreviews(['', '', '', '']);
     }
   };
 
@@ -137,19 +151,24 @@ export default function ContentManagement() {
               />
             </div>
             <div className="mb-4">
-              <label className="block text-sm font-medium mb-2">Gambar (Opsional)</label>
-              <input
-                type="file"
-                accept="image/*"
-                onChange={handleImageChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded"
-              />
-              {imagePreview && (
-                <div className="mt-2">
-                  <p className="text-sm text-gray-600 mb-2">Preview:</p>
-                  <Image src={imagePreview} alt="Preview" width={400} height={192} className="w-full h-48 object-cover rounded" />
+              <label className="block text-sm font-medium mb-2">Gambar (Opsional - maksimal 4 gambar)</label>
+              <p className="text-xs text-gray-500 mb-3">Gambar pertama akan menjadi thumbnail</p>
+              {[0, 1, 2, 3].map((index) => (
+                <div key={index} className="mb-3">
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => handleImageChange(index, e)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded text-sm"
+                  />
+                  {imagePreviews[index] && (
+                    <div className="mt-2">
+                      <p className="text-xs text-gray-600 mb-1">Preview Gambar {index + 1}:</p>
+                      <img src={imagePreviews[index]} alt={`Preview ${index + 1}`} className="w-full h-32 object-cover rounded" />
+                    </div>
+                  )}
                 </div>
-              )}
+              ))}
             </div>
             <button type="submit" className="bg-primary text-white px-4 py-2 rounded hover:bg-green-700">
               Tambah Kegiatan
@@ -162,11 +181,14 @@ export default function ContentManagement() {
             {activities.map(activity => (
               <div key={activity.id} className="bg-white p-4 rounded shadow">
                 {activity.imageUrl && (
-                  <Image src={activity.imageUrl} alt={activity.title} width={400} height={128} className="w-full h-32 object-cover rounded mb-2" />
+                  <img src={activity.imageUrl} alt={activity.title} className="w-full h-32 object-cover rounded mb-2" />
                 )}
                 <h3 className="text-xl font-semibold">{activity.title}</h3>
                 <p className="text-gray-600 text-sm line-clamp-2">{activity.description}</p>
                 <p className="text-sm text-gray-500">{activity.date}</p>
+                {(activity.imageUrl2 || activity.imageUrl3 || activity.imageUrl4) && (
+                  <p className="text-xs text-blue-600 mt-1">📸 {[activity.imageUrl, activity.imageUrl2, activity.imageUrl3, activity.imageUrl4].filter(Boolean).length} gambar</p>
+                )}
                 <button
                   onClick={() => handleDelete(activity.id)}
                   className="mt-2 bg-red-500 text-white px-3 py-1 rounded hover:bg-red-700"

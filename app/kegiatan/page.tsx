@@ -9,12 +9,16 @@ interface Activity {
   description: string;
   date: string;
   imageUrl?: string;
+  imageUrl2?: string;
+  imageUrl3?: string;
+  imageUrl4?: string;
 }
 
 export default function Activities() {
   const [activities, setActivities] = useState<Activity[]>([]);
   const [selectedActivity, setSelectedActivity] = useState<Activity | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [mainImageIndex, setMainImageIndex] = useState(0);
 
   useEffect(() => {
     fetch('/api/activities')
@@ -27,12 +31,29 @@ export default function Activities() {
 
   const openModal = (activity: Activity) => {
     setSelectedActivity(activity);
+    setMainImageIndex(0);
     setIsModalOpen(true);
   };
 
   const closeModal = () => {
     setIsModalOpen(false);
     setSelectedActivity(null);
+    setMainImageIndex(0);
+  };
+
+  const swapImage = (clickedIndex: number) => {
+    if (!selectedActivity) return;
+    const images = [
+      selectedActivity.imageUrl,
+      selectedActivity.imageUrl2,
+      selectedActivity.imageUrl3,
+      selectedActivity.imageUrl4,
+    ].filter(Boolean);
+
+    if (clickedIndex >= 0 && clickedIndex < images.length && clickedIndex !== mainImageIndex) {
+      const newIndex = mainImageIndex;
+      setMainImageIndex(clickedIndex);
+    }
   };
 
   return (
@@ -83,7 +104,7 @@ export default function Activities() {
       {/* Modal */}
       {isModalOpen && selectedActivity && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-lg max-w-2xl w-full max-h-2/3 overflow-y-auto">
+          <div className="bg-white rounded-lg max-w-3xl w-full max-h-2/3 overflow-y-auto">
             <div className="sticky top-0 bg-primary text-white p-4 flex justify-between items-center z-10">
               <h2 className="text-2xl font-bold">{selectedActivity.title}</h2>
               <button
@@ -95,14 +116,55 @@ export default function Activities() {
             </div>
 
             <div className="p-6">
-              {selectedActivity.imageUrl && (
-                <div className="mb-4 relative h-64 bg-gray-200 rounded overflow-hidden">
-                  <Image
-                    src={selectedActivity.imageUrl}
-                    alt={selectedActivity.title}
-                    fill
-                    className="object-cover"
-                  />
+              {/* Image Gallery */}
+              {(selectedActivity.imageUrl || selectedActivity.imageUrl2 || selectedActivity.imageUrl3 || selectedActivity.imageUrl4) && (
+                <div className="mb-6">
+                  {(() => {
+                    const allImages = [
+                      selectedActivity.imageUrl,
+                      selectedActivity.imageUrl2,
+                      selectedActivity.imageUrl3,
+                      selectedActivity.imageUrl4,
+                    ].filter(Boolean);
+
+                    return (
+                      <>
+                        {/* Main Image */}
+                        <div className="mb-4">
+                          {allImages[mainImageIndex] && (
+                            <div className="relative h-64 bg-gray-200 rounded overflow-hidden mb-4">
+                              <img
+                                src={allImages[mainImageIndex]}
+                                alt={selectedActivity.title}
+                                className="w-full h-full object-cover"
+                              />
+                            </div>
+                          )}
+                        </div>
+
+                        {/* Thumbnail Grid */}
+                        {allImages.length > 1 && (
+                          <div className="grid grid-cols-3 gap-3">
+                            {allImages.map((img, idx) =>
+                              idx !== mainImageIndex ? (
+                                <div
+                                  key={idx}
+                                  onClick={() => swapImage(idx)}
+                                  className="relative h-24 bg-gray-200 rounded overflow-hidden cursor-pointer hover:opacity-75 transition-opacity"
+                                >
+                                  <img
+                                    src={img}
+                                    alt={`Gambar ${idx + 1}`}
+                                    className="w-full h-full object-cover"
+                                  />
+                                </div>
+                              ) : null
+                            )}
+                          </div>
+                        )}
+                      </>
+                    );
+                  })()}
                 </div>
               )}
 

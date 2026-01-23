@@ -19,15 +19,25 @@ export async function POST(request: NextRequest) {
     const title = formData.get('title') as string;
     const description = formData.get('description') as string;
     const date = formData.get('date') as string;
-    const imageFile = formData.get('image') as File | null;
+    
+    const imageFiles = [
+      formData.get('image1') as File | null,
+      formData.get('image2') as File | null,
+      formData.get('image3') as File | null,
+      formData.get('image4') as File | null,
+    ];
 
-    let imageUrl = null;
+    const imageUrls: (string | null)[] = [];
 
-    // Handle image upload
-    if (imageFile && imageFile.size > 0) {
-      const buffer = await imageFile.arrayBuffer();
-      const base64 = Buffer.from(buffer).toString('base64');
-      imageUrl = `data:${imageFile.type};base64,${base64}`;
+    // Handle image uploads
+    for (const imageFile of imageFiles) {
+      if (imageFile && imageFile.size > 0) {
+        const buffer = await imageFile.arrayBuffer();
+        const base64 = Buffer.from(buffer).toString('base64');
+        imageUrls.push(`data:${imageFile.type};base64,${base64}`);
+      } else {
+        imageUrls.push(null);
+      }
     }
 
     const [newActivity] = await db
@@ -37,7 +47,10 @@ export async function POST(request: NextRequest) {
         title,
         description,
         date,
-        imageUrl,
+        imageUrl: imageUrls[0],
+        imageUrl2: imageUrls[1],
+        imageUrl3: imageUrls[2],
+        imageUrl4: imageUrls[3],
       })
       .returning();
     

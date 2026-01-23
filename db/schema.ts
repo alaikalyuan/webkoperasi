@@ -12,6 +12,9 @@ export const activities = sqliteTable("activities", {
   description: text("description").notNull(),
   date: text("date").notNull(),
   imageUrl: text("imageUrl"),
+  imageUrl2: text("imageUrl2"),
+  imageUrl3: text("imageUrl3"),
+  imageUrl4: text("imageUrl4"),
 });
 
 export const members = sqliteTable("members", {
