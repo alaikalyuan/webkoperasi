@@ -11,8 +11,17 @@ interface Activity {
   imageUrl?: string;
 }
 
+interface PencapaianData {
+  totalAssets: string;
+  totalMembers: number;
+}
+
 export default function Home() {
   const [latestActivities, setLatestActivities] = useState<Activity[]>([]);
+  const [pencapaian, setPencapaian] = useState<PencapaianData>({
+    totalAssets: 'Rp 500.000.000',
+    totalMembers: 150,
+  });
   const [currentActivityIndex, setCurrentActivityIndex] = useState(0);
   const [selectedActivity, setSelectedActivity] = useState<Activity | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -24,6 +33,17 @@ export default function Home() {
         const sorted = [...data].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
         setLatestActivities(sorted.slice(0, 3));
       });
+    
+    // Fetch pencapaian data
+    fetch('/api/pencapaian')
+      .then(res => res.json())
+      .then(data => {
+        setPencapaian({
+          totalAssets: data.totalAssets,
+          totalMembers: data.totalMembers,
+        });
+      })
+      .catch(error => console.error('Failed to fetch pencapaian:', error));
   }, []);
 
   // Auto-play carousel
@@ -186,8 +206,8 @@ export default function Home() {
         <section className="py-12">
           <h2 className="text-3xl font-bold text-primary mb-6">Pencapaian</h2>
           <div className="bg-white p-6 rounded shadow text-center">
-            <p className="text-2xl font-bold text-accent">Total Aset: Rp 500.000.000</p>
-            <p>Jumlah Anggota: 150 orang</p>
+            <p className="text-2xl font-bold text-accent">Total Aset: {pencapaian.totalAssets}</p>
+            <p>Jumlah Anggota: {pencapaian.totalMembers} orang</p>
           </div>
         </section>
       </div>

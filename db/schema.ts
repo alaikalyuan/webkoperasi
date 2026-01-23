@@ -46,3 +46,10 @@ export const staff = sqliteTable("staff", {
   category: text("category").notNull(), // "pengurus" or "dewan_pengawas"
   imageUrl: text("imageUrl"),
 });
+
+export const pencapaian = sqliteTable("pencapaian", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
+  totalAssets: text("totalAssets").notNull(),
+  totalMembers: integer("totalMembers").notNull(),
+  updatedAt: text("updatedAt").notNull(),
+});

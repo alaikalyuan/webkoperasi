@@ -6,15 +6,8 @@ import Link from 'next/link';
 
 export default function AdminDashboard() {
   const router = useRouter();
-  const [isLoggedIn] = useState(() => {
-    if (typeof window !== 'undefined') {
-      return !!localStorage.getItem('adminLoggedIn');
-    }
-    return false;
-  });
-
   useEffect(() => {
-    const loggedIn = localStorage.getItem('adminLoggedIn');
+    const loggedIn = !!localStorage.getItem('adminLoggedIn');
     if (!loggedIn) {
       router.push('/admin/login');
     }
@@ -24,6 +17,8 @@ export default function AdminDashboard() {
     localStorage.removeItem('adminLoggedIn');
     router.push('/');
   };
+
+  const isLoggedIn = typeof window !== 'undefined' && !!localStorage.getItem('adminLoggedIn');
 
   if (!isLoggedIn) {
     return <div>Loading...</div>;
@@ -48,6 +43,10 @@ export default function AdminDashboard() {
           <Link href="/admin/dashboard/financial" className="bg-white p-6 rounded shadow hover:shadow-lg transition">
             <h2 className="text-xl font-semibold text-primary mb-2">Input Laporan Keuangan</h2>
             <p>Masukkan data pemasukan dan pengeluaran.</p>
+          </Link>
+          <Link href="/admin/dashboard/pencapaian" className="bg-white p-6 rounded shadow hover:shadow-lg transition">
+            <h2 className="text-xl font-semibold text-primary mb-2">Manajemen Pencapaian</h2>
+            <p>Edit data total aset dan jumlah anggota.</p>
           </Link>
           <Link href="/admin/dashboard/staff" className="bg-white p-6 rounded shadow hover:shadow-lg transition">
             <h2 className="text-xl font-semibold text-primary mb-2">Struktur Organisasi</h2>

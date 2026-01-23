@@ -42,34 +42,34 @@ export default function FinancialReports() {
 
   return (
     <div className="container mx-auto p-4">
-      <h1 className="text-4xl font-bold text-primary mb-6">Laporan Keuangan</h1>
+      <h1 className="text-3xl sm:text-4xl font-bold text-primary mb-6">Laporan Keuangan</h1>
 
       {loading ? (
         <div className="text-center py-8">
           <p>Memuat laporan...</p>
         </div>
       ) : reports.length === 0 ? (
-        <div className="bg-yellow-50 border border-yellow-200 p-6 rounded">
-          <p className="text-yellow-800">Belum ada laporan keuangan yang tersedia.</p>
+        <div className="bg-yellow-50 border border-yellow-200 p-4 sm:p-6 rounded">
+          <p className="text-sm sm:text-base text-yellow-800">Belum ada laporan keuangan yang tersedia.</p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 md:gap-6">
           {/* Reports List */}
-          <div className="lg:col-span-1">
-            <h2 className="text-2xl font-semibold mb-4">Daftar Laporan</h2>
+          <div className="md:col-span-1 order-2 md:order-1">
+            <h2 className="text-xl sm:text-2xl font-semibold mb-3 sm:mb-4">Daftar Laporan</h2>
             <div className="space-y-2">
               {reports.map((report) => (
                 <button
                   key={report.id}
                   onClick={() => setSelectedReport(report)}
-                  className={`w-full text-left p-3 rounded transition-colors ${
+                  className={`w-full text-left p-3 rounded transition-colors text-sm sm:text-base ${
                     selectedReport?.id === report.id
                       ? 'bg-primary text-white'
-                      : 'bg-white border border-gray-300 hover:bg-gray-50'
+                      : 'bg-white border border-gray-300 hover:bg-gray-50 active:bg-gray-100'
                   }`}
                 >
                   <div className="font-semibold">{formatMonth(report.month)}</div>
-                  <div className="text-sm">
+                  <div className="text-xs sm:text-sm">
                     {getFileIcon(report.fileType)} {report.fileType.toUpperCase()}
                   </div>
                 </button>
@@ -78,56 +78,56 @@ export default function FinancialReports() {
           </div>
 
           {/* Selected Report Display */}
-          <div className="lg:col-span-3">
+          <div className="md:col-span-3 order-1 md:order-2">
             {selectedReport ? (
-              <div className="bg-white p-6 rounded shadow">
-                <div className="mb-6">
-                  <h2 className="text-3xl font-semibold mb-2">
+              <div className="bg-white p-4 sm:p-6 rounded shadow">
+                <div className="mb-4 sm:mb-6">
+                  <h2 className="text-2xl sm:text-3xl font-semibold mb-2">
                     {formatMonth(selectedReport.month)}
                   </h2>
-                  <p className="text-gray-600">
+                  <p className="text-sm sm:text-base text-gray-600 truncate">
                     File: {selectedReport.fileName}
                   </p>
-                  <p className="text-sm text-gray-500">
+                  <p className="text-xs sm:text-sm text-gray-500">
                     Diupload: {new Date(selectedReport.uploadedAt).toLocaleDateString('id-ID')}
                   </p>
                 </div>
 
                 <div className="space-y-4">
                   {selectedReport.fileType === 'pdf' ? (
-                    <div>
+                    <div className="overflow-x-auto">
                       <iframe
                         src={selectedReport.blobUrl}
-                        className="w-full h-96 border border-gray-300 rounded"
+                        className="w-full min-h-80 sm:h-96 border border-gray-300 rounded"
                         title={selectedReport.fileName}
                       />
                     </div>
                   ) : (
                     <div className="bg-gray-50 p-4 rounded text-center">
-                      <p className="text-gray-600 mb-4">File Excel tidak dapat ditampilkan secara langsung</p>
+                      <p className="text-sm sm:text-base text-gray-600 mb-4">File Excel tidak dapat ditampilkan secara langsung</p>
                       <a
                         href={selectedReport.blobUrl}
                         download={selectedReport.fileName}
-                        className="inline-block bg-blue-500 text-white px-6 py-2 rounded hover:bg-blue-600"
+                        className="inline-block bg-blue-500 text-white px-4 sm:px-6 py-2 rounded hover:bg-blue-600 transition-colors text-sm sm:text-base"
                       >
                         Download Excel
                       </a>
                     </div>
                   )}
 
-                  <div className="flex gap-3">
+                  <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
                     <a
                       href={selectedReport.blobUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex-1 bg-primary text-white px-4 py-2 rounded text-center hover:bg-green-700 transition-colors"
+                      className="flex-1 bg-primary text-white px-4 py-3 rounded text-center hover:bg-green-700 transition-colors text-sm sm:text-base font-medium"
                     >
                       Buka di Tab Baru
                     </a>
                     <a
                       href={selectedReport.blobUrl}
                       download={selectedReport.fileName}
-                      className="flex-1 bg-blue-500 text-white px-4 py-2 rounded text-center hover:bg-blue-600 transition-colors"
+                      className="flex-1 bg-blue-500 text-white px-4 py-3 rounded text-center hover:bg-blue-600 transition-colors text-sm sm:text-base font-medium"
                     >
                       Download
                     </a>
@@ -135,8 +135,8 @@ export default function FinancialReports() {
                 </div>
               </div>
             ) : (
-              <div className="bg-gray-50 p-6 rounded border border-gray-300 text-center">
-                <p className="text-gray-600">Pilih laporan dari daftar di sebelah untuk melihat detailnya</p>
+              <div className="bg-gray-50 p-4 sm:p-6 rounded border border-gray-300 text-center">
+                <p className="text-sm sm:text-base text-gray-600">Pilih laporan dari daftar untuk melihat detailnya</p>
               </div>
             )}
           </div>
